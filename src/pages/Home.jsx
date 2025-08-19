@@ -7,17 +7,30 @@ const Home = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.posts);
 
+  const [startupLoading, setStartupLoading] = useState(true);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    const timer = setTimeout(() => {
+      setStartupLoading(false)
+      dispatch(fetchPosts());
+    }, 5000);
+    return () => clearTimeout(timer);
   }, [dispatch]);
-  console.log(data);
+
+  // console.log(data);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = data.slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  if(startupLoading){
+    return(
+      <div className="flex items-center justify-center h-screen text-2xl font-bold"> LOADING...</div>
+    )
+  }
 
   return (
     <div>
@@ -61,7 +74,6 @@ const Home = () => {
           &laquo;
         </button>
 
-       
         {[...Array(totalPages)].map((_, i) => (
           <button
             key={i}
